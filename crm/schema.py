@@ -1,6 +1,8 @@
 import graphene
 from graphene_django.types import DjangoObjectType
+from graphene_django.filter import DjangoFilterConnectionField
 from .models import Customer, Product, Order
+from .filters import CustomerFilter, ProductFilter, OrderFilter
 from django.utils import timezone
 
 # === GraphQL Types ===
@@ -8,14 +10,20 @@ from django.utils import timezone
 class CustomerType(DjangoObjectType):
     class Meta:
         model = Customer
+        filterset_class = CustomerFilter
+        interfaces = (graphene.relay.Node,)
 
 class ProductType(DjangoObjectType):
     class Meta:
         model = Product
+        filterset_class = ProductFilter
+        interfaces = (graphene.relay.Node,)
 
 class OrderType(DjangoObjectType):
     class Meta:
         model = Order
+        filterset_class = OrderFilter
+        interfaces = (graphene.relay.Node,)
 
 # === Input Object Types ===
 
@@ -61,7 +69,7 @@ class BulkCreateCustomers(graphene.Mutation):
     class Arguments:
         input = graphene.List(BulkCustomerInput, required=True)
 
-    customers = graphene.List(CustomerType)  # ✅ simplified to 'customers'
+    customers = graphene.List(CustomerType)
     errors = graphene.List(graphene.String)
 
     def mutate(self, info, input):
@@ -128,22 +136,14 @@ class CreateOrder(graphene.Mutation):
 
         return CreateOrder(order=order, message="Order created successfully.")
 
-# === Root Query and Mutation ===
+# === Query and Mutation ===
 
 class Query(graphene.ObjectType):
     hello = graphene.String(default_value="Hello, GraphQL!")
-    customers = graphene.List(CustomerType)
-    products = graphene.List(ProductType)
-    orders = graphene.List(OrderType)
 
-    def resolve_customers(self, info):
-        return Customer.objects.all()
-
-    def resolve_products(self, info):
-        return Product.objects.all()
-
-    def resolve_orders(self, info):
-        return Order.objects.select_related("customer").prefetch_related("products").all()
+    all_customers = DjangoFilterConnectionField(CustomerType)
+    all_products = DjangoFilterConnectionField(ProductType)
+    all_orders = DjangoFilterConnectionField(OrderType)
 
 class Mutation(graphene.ObjectType):
     create_customer = CreateCustomer.Field()
