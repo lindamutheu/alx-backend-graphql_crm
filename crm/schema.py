@@ -4,6 +4,7 @@ from graphene_django.filter import DjangoFilterConnectionField
 from .models import Customer, Product, Order
 from .filters import CustomerFilter, ProductFilter, OrderFilter
 from django.utils import timezone
+from .models import Product
 
 # === GraphQL Types ===
 
@@ -150,3 +151,27 @@ class Mutation(graphene.ObjectType):
     bulk_create_customers = BulkCreateCustomers.Field()
     create_product = CreateProduct.Field()
     create_order = CreateOrder.Field()
+
+#=== StockProducts ===
+class UpdateLowStockProducts(graphene.Mutation):
+    class Output:
+        updated_products = graphene.List(graphene.String)
+        message = graphene.String()
+
+    def mutate(self, info):
+        updated_products = []
+
+        # Query products with stock < 10
+        low_stock_products = Product.objects.filter(stock__lt=10)
+
+        for product in low_stock_products:
+            product.stock += 10  # simulate restocking
+            product.save()
+            updated_products.append(f"{product.name} (new stock: {product.stock})")
+
+        message = "Stock levels updated successfully." if updated_products else "No low-stock products found."
+        return UpdateLowStockProducts(updated_products=updated_products, message=message)
+
+# Add mutation to your schema
+class Mutation(graphene.ObjectType):
+    update_low_stock_products = UpdateLowStockProducts.Field()
