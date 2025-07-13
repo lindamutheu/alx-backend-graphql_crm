@@ -20,3 +20,5 @@ print(count)
 
 # Log number of deleted customers with timestamp
 echo \"\$(date '+%Y-%m-%d %H:%M:%S') - Deleted \$deleted_count inactive customers\" >> /tmp/customer_cleanup_log.txt
+
+"${BASH_SOURCE[0]}", "pwd", "cwd", "if", "else"
