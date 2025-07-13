@@ -2,3 +2,4 @@ django-crontab
 celery
 django-celery-beat
 redis
+django-crontab==0.7.1
