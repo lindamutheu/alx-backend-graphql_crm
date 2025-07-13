@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Go to project root (relative to script location)
+# Change directory to project root (relative to script location)
 cd ../../
 
-# Run Django shell command to delete inactive customers
+# Delete inactive customers using Django shell
 deleted_count=$(python3 manage.py shell -c "
 from datetime import timedelta
 from django.utils import timezone
@@ -18,5 +18,5 @@ inactive_customers.delete()
 print(count)
 ")
 
-# Log deleted count with timestamp
+# Log number of deleted customers with timestamp
 echo \"\$(date '+%Y-%m-%d %H:%M:%S') - Deleted \$deleted_count inactive customers\" >> /tmp/customer_cleanup_log.txt
