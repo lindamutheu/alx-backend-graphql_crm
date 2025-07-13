@@ -9,11 +9,8 @@ INSTALLED_APPS = [
       'django_celery_beat',
 ]
 CRONJOBS = [
-    ('*/5 * * * *', 'crm.cron.log_crm_heartbeat'),
-]
-
-CRONJOBS = [
     ('0 */12 * * *', 'crm.cron.update_low_stock'),
+    ('*/5 * * * *', 'crm.cron.log_crm_heartbeat'),
 ]
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
