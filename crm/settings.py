@@ -4,6 +4,8 @@ INSTALLED_APPS = [
     # other apps
     'django_crontab',
     'django_celery_beat',
+    "django_filters",
+     "graphene_django",
 ]
 CRONJOBS = [
     ('*/5 * * * *', 'crm.cron.log_crm_heartbeat'),

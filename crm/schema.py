@@ -152,7 +152,15 @@ class Mutation(graphene.ObjectType):
     create_product = CreateProduct.Field()
     create_order = CreateOrder.Field()
 
+
 #=== StockProducts ===
+
+class ProductType(DjangoObjectType):
+    class Meta:
+        model = Product
+        fields = ("id", "name", "stock")
+
+        
 class UpdateLowStockProducts(graphene.Mutation):
     class Output:
         updated_products = graphene.List(graphene.String)
@@ -175,3 +183,20 @@ class UpdateLowStockProducts(graphene.Mutation):
 # Add mutation to your schema
 class Mutation(graphene.ObjectType):
     update_low_stock_products = UpdateLowStockProducts.Field()
+
+    class Query(graphene.ObjectType):
+     total_customers = graphene.Int()
+    total_orders = graphene.Int()
+    total_revenue = graphene.Float()
+
+    def resolve_total_customers(root, info):
+        from .models import Customer
+        return Customer.objects.count()
+
+    def resolve_total_orders(root, info):
+        from .models import Order
+        return Order.objects.count()
+
+    def resolve_total_revenue(root, info):
+        from .models import Order
+        return Order.objects.aggregate(total=models.Sum('totalamount'))['total'] or 0
