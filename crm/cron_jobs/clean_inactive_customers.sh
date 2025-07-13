@@ -1,4 +1,5 @@
 #!/bin/bash
+#!/usr/bin/env bash
 
 # Change directory to project root (relative to script location)
 cd ../../
