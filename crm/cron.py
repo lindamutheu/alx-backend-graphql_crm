@@ -3,7 +3,6 @@ import requests
 from gql.transport.requests import RequestsHTTPTransport
 from gql import gql, Client
 
-
 def update_low_stock():
     graphql_url = "http://localhost:8000/graphql"
     mutation = """
